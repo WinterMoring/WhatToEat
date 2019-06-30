@@ -1,10 +1,10 @@
 <template>
-  <div class="me">
-    <div>我的</div>
+  <div class="nearby">
+    <div>我吃过的</div>
   </div>
 </template>
 <script>
 export default {
-  name: "me"
+  name: "ate"
 };
 </script>
