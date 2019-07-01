@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" @touchmove.prevent @scroll.prevent>
     <div>
       <router-view></router-view>
     </div>

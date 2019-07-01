@@ -17,18 +17,19 @@
     </div>
     <div class="showfood">{{food}}</div>
     <div class="buttonwarp">
-      <mt-button type="primary" size="normal" class="mainbutton" @click="getresult()">
-        <slot>{{btnval}}</slot>
-      </mt-button>
+      <mt-button type="primary" size="normal" class="mainbutton" @click="getresult()">{{btnval}}</mt-button>
     </div>
-
-    <div v-cloak class="foodlist">
-      <mt-cell class="foodcell" title="名字">
-        <span>地址</span>
-        <img slot="icon" src="../assets/nophoto.png" width="50" height="50" />
-      </mt-cell>
+    <div class="scrollwrap" ref="listscroll">
+      <div class="foodlist">
+        范围：
+        <div v-for="(item,index) in list" :key="index">
+          <mt-cell class="foodcell" :title="item.foodname">
+            <span>{{item.discription}}</span>
+            <img slot="icon" src="../assets/nophoto.png" width="50" height="50" />
+          </mt-cell>
+        </div>
+      </div>
     </div>
-
     <mt-popup
       v-model="popupVisible"
       popup-transition="popup-fade"
@@ -41,22 +42,80 @@
 </template>
 <script>
 import { watchFile } from "fs";
+import BScroll from "better-scroll";
+import { setInterval, clearInterval } from "timers";
 export default {
-  name: "Myfavour",
+  name: "justclick",
   data() {
     return {
       selected: "1",
       value: "",
       popupVisible: false,
       food: "啥啊",
-      btnval: "走着"
+      btnval: "走着",
+      list: [
+        {
+          foodname: "米饭",
+          discription: "雁塔区长延堡路1234号",
+          image: "public\\images\\/qdcmifan.jpg"
+        },
+        {
+          foodname: "面条",
+          discription: "秦都区人民西路24534号",
+          image: "public\\images\\/qdcmifan.jpg"
+        },
+        {
+          foodname: "火锅",
+          discription: "火锅",
+          image: "public\\images\\/qdcmifan.jpg"
+        },
+        {
+          foodname: "黄焖鸡",
+          discription: "莲湖区xxxx路346234号",
+          image: "public\\images\\/qdcmifan.jpg"
+        },
+        {
+          foodname: "烤肉",
+          discription: "莲湖区xxxx路346234号",
+          image: "public\\images\\/qdcmifan.jpg"
+        },
+        {
+          foodname: "饺子",
+          discription: "莲湖区xxxx路346234号",
+          image: "public\\images\\/qdcmifan.jpg"
+        },
+        {
+          foodname: "串串",
+          discription: "莲湖区xxxx路346234号",
+          image: "public\\images\\/qdcmifan.jpg"
+        }
+      ],
+      intervalId: null
     };
   },
   methods: {
     showPop() {
       this.popupVisible = true;
     },
-    getresult() {}
+    getresult() {
+      if (this.btnval == "走着") {
+        this.intervalId = setInterval(() => {
+          let random = Math.round(Math.random() * this.list.length);
+          this.food = this.list[random].foodname;
+        }, 50);
+        this.btnval = "停";
+      } else {
+        clearInterval(this.intervalId);
+        this.btnval = "走着";
+      }
+    },
+    initScroll() {
+      new BScroll(this.$refs["listscroll"]);
+    }
+  },
+  mounted() {
+    //axios.get();
+    this.initScroll();
   },
   watch: {
     selected(newval, oldval) {
@@ -104,14 +163,21 @@ export default {
       border-radius: 50%;
     }
   }
-  .foodlist {
-    text-align: left;
-    width: 100%;
-    .foodcell {
-      height: 70px;
-      padding: 10px;
-      border-top: #c3c3c3 1px solid;
-      border-bottom: #c3c3c3 1px solid;
+  .scrollwrap {
+    height: 250px;
+    // position: absolute;
+    // top: 200px;
+    // bottom: 100px;
+    .foodlist {
+      text-align: left;
+      width: 100%;
+      overflow: hidden;
+      .foodcell {
+        height: 70px;
+        padding: 10px;
+        border-top: #c3c3c3 1px solid;
+        border-bottom: #c3c3c3 1px solid;
+      }
     }
   }
 }
