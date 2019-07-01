@@ -23,7 +23,7 @@
       <div class="foodlist">
         范围：
         <div v-for="(item,index) in list" :key="index">
-          <mt-cell class="foodcell" :title="item.foodname">
+          <mt-cell :title="item.foodname">
             <span>{{item.discription}}</span>
             <img slot="icon" src="../assets/nophoto.png" width="50" height="50" />
           </mt-cell>
@@ -36,7 +36,7 @@
       closeOnClickModal="true"
       position="bottom"
     >
-      <span>弹出框</span>
+      <locationpicker @listenlocation="getlocation"></locationpicker>
     </mt-popup>
   </div>
 </template>
@@ -44,10 +44,15 @@
 import { watchFile } from "fs";
 import BScroll from "better-scroll";
 import { setInterval, clearInterval } from "timers";
+import locationpicker from "../components/locationpicker";
 export default {
   name: "justclick",
+  components: {
+    locationpicker
+  },
   data() {
     return {
+      location: "",
       selected: "1",
       value: "",
       popupVisible: false,
@@ -111,6 +116,11 @@ export default {
     },
     initScroll() {
       new BScroll(this.$refs["listscroll"]);
+    },
+    getlocation(data) {
+      this.location = data;
+      this.popupVisible = false;
+      alert(this.location);
     }
   },
   mounted() {
@@ -165,20 +175,14 @@ export default {
   }
   .scrollwrap {
     height: 250px;
-    // position: absolute;
-    // top: 200px;
-    // bottom: 100px;
     .foodlist {
       text-align: left;
       width: 100%;
       overflow: hidden;
-      .foodcell {
-        height: 70px;
-        padding: 10px;
-        border-top: #c3c3c3 1px solid;
-        border-bottom: #c3c3c3 1px solid;
-      }
     }
+  }
+  .mint-popup {
+    width: 100%;
   }
 }
 </style>
