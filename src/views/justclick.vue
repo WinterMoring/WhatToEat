@@ -3,7 +3,7 @@
     <div class="h2title">
       <h2>今个就要吃</h2>
     </div>
-    <div class="showfood">{{food}}</div>
+    <div class="showfood">{{resultname}}</div>
     <div class="buttonwarp">
       <mt-button type="primary" size="normal" class="mainbutton" @click="getresult()">{{btnval}}</mt-button>
     </div>
@@ -54,6 +54,7 @@ import BScroll from "better-scroll";
 import { setInterval, clearInterval } from "timers";
 import locationpicker from "../components/locationpicker";
 import kindpicker from "../components/kindpicker";
+import { MessageBox } from "mint-ui";
 export default {
   name: "justclick",
   components: {
@@ -67,7 +68,8 @@ export default {
       value: "",
       popupLocation: false,
       popupKind: false,
-      food: "啥啊",
+      resultname: "啥啊",
+      result: {},
       btnval: "走着",
       list: [
         {
@@ -120,11 +122,13 @@ export default {
       if (this.btnval == "走着") {
         this.intervalId = setInterval(() => {
           let random = Math.round(Math.random() * this.list.length);
-          this.food = this.list[random].foodname;
+          this.result = this.list[random];
+          this.resultname = this.list[random].foodname;
         }, 50);
         this.btnval = "停";
       } else {
         clearInterval(this.intervalId);
+        this.openConfirm();
         this.btnval = "走着";
       }
     },
@@ -138,6 +142,17 @@ export default {
     getkind(data) {
       this.kind = data;
       this.popupKind = false;
+    },
+    openConfirm() {
+      MessageBox({
+        title: "今天就吃",
+        message: this.resultname,
+        showCancelButton: true,
+        confirmButtonText: "就它了",
+        cancelButtonText: "再瞅瞅"
+      }).then(action => {
+        //添加到吃过的
+      });
     }
   },
   mounted() {
@@ -180,9 +195,9 @@ export default {
   }
   .wrap {
     height: 300px;
-    overflow: hidden;
+    overflow: hidden; //没有这个属性就会溢出，跑上去
     .scrollwrap {
-      height: 300px;
+      height: 200px;
       .foodlist {
         text-align: left;
         width: 100%;
