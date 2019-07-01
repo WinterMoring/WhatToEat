@@ -7,7 +7,9 @@
       ref="picker"
       value-key="cName"
     >
-      <mt-button @click="handleConfirm" class="sure">确认</mt-button>
+      <span class="onleft"></span>
+      <span class="oncenter">选择地区</span>
+      <span @click="handleConfirm" class="sure">确认</span>
     </mt-picker>
   </div>
 </template>
@@ -16,7 +18,6 @@ export default {
   name: "locationpicker",
   data() {
     return {
-      popupVisible: false,
       dateSlots: [
         // 当slots这样定义时，因为tagList是通过api异步请求的，无法正常渲染，出现下图空白
         /* {
@@ -225,11 +226,22 @@ export default {
   width: 100%;
   .picker {
     .picker-toolbar {
-      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      .onleft {
+        flex: 25%;
+      }
+      .oncenter {
+        flex: 50%;
+        font-size: 18px;
+        margin-top: 5px;
+      }
       .sure {
-        background-color: #ffffff;
+        flex: 25%;
         color: red;
         border: 0px;
+        font-size: 18px;
+        margin-top: 5px;
       }
     }
     //.picker-slot-wrapper,

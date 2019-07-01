@@ -1,17 +1,5 @@
 <template>
   <div class="justclick">
-    <div></div>
-    <div class="header">
-      <div class="header-cell" @click="showPop()">
-        附近
-        <img src="../assets/down.png" width="10x" height="10px" />
-      </div>
-      <div class="header-cell header-cell-center">
-        分类
-        <img src="../assets/down.png" width="10x" height="10px" />
-      </div>
-      <div class="header-cell">只看吃过的</div>
-    </div>
     <div class="h2title">
       <h2>今个就要吃</h2>
     </div>
@@ -19,24 +7,44 @@
     <div class="buttonwarp">
       <mt-button type="primary" size="normal" class="mainbutton" @click="getresult()">{{btnval}}</mt-button>
     </div>
-    <div class="scrollwrap" ref="listscroll">
-      <div class="foodlist">
-        范围：
-        <div v-for="(item,index) in list" :key="index">
-          <mt-cell :title="item.foodname">
-            <span>{{item.discription}}</span>
-            <img slot="icon" src="../assets/nophoto.png" width="50" height="50" />
-          </mt-cell>
+    <div class="header">
+      <div class="header-cell" @click="showPopLocation()">
+        {{location}}
+        <img src="../assets/down.png" width="10x" height="10px" />
+      </div>
+      <div class="header-cell header-cell-center" @click="showPopKind()">
+        {{kind}}
+        <img src="../assets/down.png" width="10x" height="10px" />
+      </div>
+      <div class="header-cell">只看吃过的</div>
+    </div>
+    <div class="wrap">
+      <div class="scrollwrap" ref="listscroll">
+        <div class="foodlist">
+          <div v-for="(item,index) in list" :key="index">
+            <mt-cell :title="item.foodname">
+              <span>{{item.discription}}</span>
+              <img slot="icon" src="../assets/nophoto.png" width="50" height="50" />
+            </mt-cell>
+          </div>
         </div>
       </div>
     </div>
     <mt-popup
-      v-model="popupVisible"
+      v-model="popupLocation"
       popup-transition="popup-fade"
       closeOnClickModal="true"
       position="bottom"
     >
       <locationpicker @listenlocation="getlocation"></locationpicker>
+    </mt-popup>
+    <mt-popup
+      v-model="popupKind"
+      popup-transition="popup-fade"
+      closeOnClickModal="true"
+      position="bottom"
+    >
+      <kindpicker @listenkind="getkind"></kindpicker>
     </mt-popup>
   </div>
 </template>
@@ -45,17 +53,20 @@ import { watchFile } from "fs";
 import BScroll from "better-scroll";
 import { setInterval, clearInterval } from "timers";
 import locationpicker from "../components/locationpicker";
+import kindpicker from "../components/kindpicker";
 export default {
   name: "justclick",
   components: {
-    locationpicker
+    locationpicker,
+    kindpicker
   },
   data() {
     return {
-      location: "",
-      selected: "1",
+      location: "附近",
+      kind: "全部",
       value: "",
-      popupVisible: false,
+      popupLocation: false,
+      popupKind: false,
       food: "啥啊",
       btnval: "走着",
       list: [
@@ -99,8 +110,11 @@ export default {
     };
   },
   methods: {
-    showPop() {
-      this.popupVisible = true;
+    showPopLocation() {
+      this.popupLocation = true;
+    },
+    showPopKind() {
+      this.popupKind = true;
     },
     getresult() {
       if (this.btnval == "走着") {
@@ -119,25 +133,16 @@ export default {
     },
     getlocation(data) {
       this.location = data;
-      this.popupVisible = false;
-      alert(this.location);
+      this.popupLocation = false;
+    },
+    getkind(data) {
+      this.kind = data;
+      this.popupKind = false;
     }
   },
   mounted() {
     //axios.get();
     this.initScroll();
-  },
-  watch: {
-    selected(newval, oldval) {
-      switch (newval) {
-        case "1":
-          this.popupVisible = true;
-          break;
-
-        default:
-          break;
-      }
-    }
   }
 };
 </script>
@@ -173,12 +178,16 @@ export default {
       border-radius: 50%;
     }
   }
-  .scrollwrap {
-    height: 250px;
-    .foodlist {
-      text-align: left;
-      width: 100%;
-      overflow: hidden;
+  .wrap {
+    height: 300px;
+    overflow: hidden;
+    .scrollwrap {
+      height: 300px;
+      .foodlist {
+        text-align: left;
+        width: 100%;
+        overflow: hidden;
+      }
     }
   }
   .mint-popup {
