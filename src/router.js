@@ -19,28 +19,43 @@ export default new Router({
             component: () =>
                 import ('./views/Regist.vue')
         },
+        // {
+        //     path: '/home',
+        //     name: 'home',
+        //     component: () =>
+        //         import ('./views/Home.vue'),
+        //     children: [{
+        //         path: 'justclick',
+        //         name: 'justclick',
+        //         component: () =>
+        //             import ('./views/justclick.vue'),
+        //     }, {
+        //         path: 'ate',
+        //         name: 'ate',
+        //         component: () =>
+        //             import ('./views/ate.vue'),
+        //     }, {
+        //         path: 'me',
+        //         name: 'me',
+        //         component: () =>
+        //             import ('./views/me.vue'),
+        //     }]
+        // },
         {
-            path: '/home',
-            name: 'home',
+            path: '/justclick',
+            name: 'justclick',
             component: () =>
-                import ('./views/Home.vue'),
-            children: [{
-                path: 'justclick',
-                name: 'justclick',
-                component: () =>
-                    import ('./views/justclick.vue'),
-            }, {
-                path: 'ate',
-                name: 'ate',
-                component: () =>
-                    import ('./views/ate.vue'),
-            }, {
-                path: 'me',
-                name: 'me',
-                component: () =>
-                    import ('./views/me.vue'),
-            }]
-        },
-
+                import ('./views/justclick.vue'),
+        }, {
+            path: '/ate',
+            name: 'ate',
+            component: () =>
+                import ('./views/ate.vue'),
+        }, {
+            path: '/me',
+            name: 'me',
+            component: () =>
+                import ('./views/me.vue'),
+        }
     ]
 })

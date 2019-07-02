@@ -1,6 +1,10 @@
 <template>
   <div class="ate">
-    <h2 class="page-title">我吃过的</h2>
+    <mt-header title="我吃过的">
+      <router-link to="/justclick" slot="left">
+        <mt-button icon="back"></mt-button>
+      </router-link>
+    </mt-header>
     <div class="scrollwrap" ref="listscroll">
       <div class="cellwrap">
         <mt-cell-swipe
@@ -113,6 +117,16 @@ export default {
 };
 </script>
 <style lang="scss">
+.mint-header {
+  background-color: inherit;
+  color: inherit;
+  .mintui-back {
+    color: #cfcfcf;
+  }
+  .mint-header-title {
+    font-size: 1.5em;
+  }
+}
 .scrollwrap {
   height: 500px;
   overflow: hidden;

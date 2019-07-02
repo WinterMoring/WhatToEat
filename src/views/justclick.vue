@@ -1,7 +1,9 @@
 <template>
   <div class="justclick">
     <div class="h2title">
-      <h2>今个就要吃</h2>
+      <img src="../assets/bars.png" class="topicons" @click="popupSide=true" />
+      <h2 class="title">今个就要吃</h2>
+      <img src="../assets/share.png" class="topicons" @click="openalarm()" />
     </div>
     <div class="showfood">{{resultname}}</div>
     <div class="buttonwarp">
@@ -34,6 +36,7 @@
       popup-transition="popup-fade"
       closeOnClickModal="true"
       position="bottom"
+      style="width: 100%;"
     >
       <locationpicker @listenlocation="getlocation"></locationpicker>
     </mt-popup>
@@ -42,8 +45,25 @@
       popup-transition="popup-fade"
       closeOnClickModal="true"
       position="bottom"
+      style="width: 100%;"
     >
       <kindpicker @listenkind="getkind"></kindpicker>
+    </mt-popup>
+    <mt-popup
+      v-model="popupSide"
+      popup-transition="popup-fade"
+      closeOnClickModal="true"
+      position="left"
+      style="width: 40%;height:100%;"
+    >
+      <div class="leftbar">
+        <mt-cell title="我吃过的" is-link :to="{ name: 'ate' }">
+          <img slot="icon" src="../assets/favorite.png" width="24" height="24" />
+        </mt-cell>
+        <mt-cell title="账号信息" is-link :to="{ name: 'me' }">
+          <img slot="icon" src="../assets/account.png" width="24" height="24" />
+        </mt-cell>
+      </div>
     </mt-popup>
   </div>
 </template>
@@ -67,6 +87,7 @@ export default {
       value: "",
       popupLocation: false,
       popupKind: false,
+      popupSide: false,
       resultname: "啥啊",
       result: {},
       btnval: "走着",
@@ -153,6 +174,25 @@ export default {
       }).then(action => {
         //添加到吃过的
       });
+    },
+    openalarm() {
+      MessageBox({
+        title: "抱歉",
+        message: "分享功能尚未完成",
+        showCancelButton: false,
+        showConfirmButton: true,
+        closeOnClickModal: true
+      });
+    },
+    routetoate() {
+      this.$router.push({
+        name: "ate"
+      });
+    },
+    routetome() {
+      this.$router.push({
+        name: "me"
+      });
     }
   },
   mounted() {
@@ -165,6 +205,15 @@ export default {
 .justclick {
   height: 100%;
   width: 100%;
+  .h2title {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    .topicons {
+      height: 25px;
+      width: 25px;
+    }
+  }
   .header {
     margin: 5px 8px;
     display: flex;
@@ -191,6 +240,7 @@ export default {
       height: 150px;
       width: 150px;
       border-radius: 50%;
+      box-shadow: 0px 0px 50px 0px #0080ff;
     }
   }
   .wrap {
@@ -205,8 +255,12 @@ export default {
       }
     }
   }
-  .mint-popup {
-    width: 100%;
-  }
+  // .mint-popup {
+  //   .leftbar {
+  //     height: 100%;
+  //     width: 30%;
+  //     background-color: whitesmoke;
+  //   }
+  // }
 }
 </style>
