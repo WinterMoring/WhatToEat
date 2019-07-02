@@ -21,6 +21,11 @@
 </template>
 
 <script>
+import urls from "../urls";
+import axios from "../axios/axios";
+import { mapMutations } from "vuex";
+import { MessageBox } from "mint-ui";
+
 export default {
   name: "Login",
   data() {
@@ -31,8 +36,32 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(["LOGIN"]),
     login() {
-      this.$router.push({ path: "/justclick" });
+      axios
+        .get(urls.login, {
+          params: {
+            username: this.username,
+            password: this.password
+          }
+        })
+        .then(res => {
+          if (res.state == 0) {
+            localStorage.setItem("token", res.token); //存储token
+            localStorage.setItem("username", this.username); //存储用户
+            this.LOGIN({
+              token: res.token,
+              username: this.username
+            });
+            console.log(res);
+            this.$router.push({ path: "/justclick" });
+          } else {
+            MessageBox("", res.msg);
+          }
+        })
+        .catch(err => {
+          MessageBox("", err);
+        });
     },
     goRegist() {
       this.$router.push({ path: "/regist" });
