@@ -1,4 +1,4 @@
-const baseUrl = "localhost:8080";
+const baseUrl = "/api";
 const addfavours = baseUrl + "/addfavours";
 const login = baseUrl + "/login";
 const regist = baseUrl + "/regist";

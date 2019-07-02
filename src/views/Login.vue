@@ -46,17 +46,17 @@ export default {
           }
         })
         .then(res => {
-          if (res.state == 0) {
+          console.log(res);
+          if (res.data.state == 0) {
             localStorage.setItem("token", res.token); //存储token
             localStorage.setItem("username", this.username); //存储用户
             this.LOGIN({
-              token: res.token,
+              token: res.data.token,
               username: this.username
             });
-            console.log(res);
             this.$router.push({ path: "/justclick" });
           } else {
-            MessageBox("", res.msg);
+            MessageBox("", res.data.msg);
           }
         })
         .catch(err => {
