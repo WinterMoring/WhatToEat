@@ -22,9 +22,8 @@
       <div class="scrollwrap" ref="listscroll">
         <div class="foodlist">
           <div v-for="(item,index) in list" :key="index">
-            <mt-cell :title="item.foodname">
-              <span>{{item.discription}}</span>
-              <img slot="icon" src="../assets/nophoto.png" width="50" height="50" />
+            <mt-cell :title="item.foodname" :label="item.discription">
+              <!-- <img slot="icon" src="../assets/nophoto.png" width="50" height="50" /> -->
             </mt-cell>
           </div>
         </div>
@@ -149,7 +148,8 @@ export default {
         message: this.resultname,
         showCancelButton: true,
         confirmButtonText: "就它了",
-        cancelButtonText: "再瞅瞅"
+        cancelButtonText: "再瞅瞅",
+        closeOnClickModal: false
       }).then(action => {
         //添加到吃过的
       });
