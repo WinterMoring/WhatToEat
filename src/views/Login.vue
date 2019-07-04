@@ -23,7 +23,6 @@
 <script>
 import urls from "../urls";
 import axios from "../axios/axios";
-import { mapMutations } from "vuex";
 import { MessageBox } from "mint-ui";
 
 export default {

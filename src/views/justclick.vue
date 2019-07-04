@@ -68,7 +68,6 @@
   </div>
 </template>
 <script>
-import { watchFile } from "fs";
 import BScroll from "better-scroll";
 import { setInterval, clearInterval } from "timers";
 import locationpicker from "../components/locationpicker";
@@ -80,7 +79,6 @@ import urls from "../urls";
 import keys from "../keys";
 import { Indicator } from "mint-ui";
 import { Toast } from "mint-ui";
-import { switchCase } from "@babel/types";
 export default {
   name: "justclick",
   components: {
@@ -150,7 +148,7 @@ export default {
         confirmButtonText: "就它了",
         cancelButtonText: "再瞅瞅",
         closeOnClickModal: false
-      }).then(action => {
+      }).then(() => {
         //添加到吃过的
         axios
           .post(urls.addfavours, {
@@ -160,25 +158,21 @@ export default {
           })
           .then(res => {
             //console.log(res);
+            let msg = "";
             switch (res.data.state) {
               case 0:
-                let instance = Toast(`已添加到我吃过的`);
-                setTimeout(() => {
-                  instance.close();
-                }, 2000);
+                msg = "已添加到我吃过的";
                 break;
               case -1:
-                let instance2 = Toast(`这家吃过，味道不错`);
-                setTimeout(() => {
-                  instance.close();
-                }, 2000);
+                msg = `这家吃过，味道不错`;
                 break;
               default:
-                let instance3 = Toast(`啊哦，出错了`);
-                setTimeout(() => {
-                  instance.close();
-                }, 2000);
+                msg = "啊哦，出错了";
             }
+            let instance = Toast(msg);
+            setTimeout(() => {
+              instance.close();
+            }, 2000);
           });
       });
     },
