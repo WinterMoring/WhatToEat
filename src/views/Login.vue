@@ -11,7 +11,7 @@
     <div class="operate-warpper">
       <mt-button type="primary" size="large" @click="login()">登录</mt-button>
       <div class="rememberme">
-        <input type="checkbox" v-model="rememberUser" @click="rememberUser=!rememberUser" />记住我
+        <input type="checkbox" v-model="rememberflag" @click="rememberUser()" />记住我
       </div>
       <div class="regist-link">
         <a href @click.prevent="goRegist">没有账号？注册</a>
@@ -32,11 +32,10 @@ export default {
     return {
       username: "",
       password: "",
-      rememberUser: false
+      rememberflag: false
     };
   },
   methods: {
-    ...mapMutations(["LOGIN"]),
     login() {
       axios
         .get(urls.login, {
@@ -46,14 +45,10 @@ export default {
           }
         })
         .then(res => {
-          console.log(res);
+          //console.log(res);
           if (res.data.state == 0) {
-            localStorage.setItem("token", res.token); //存储token
+            localStorage.setItem("token", res.data.token); //存储token
             localStorage.setItem("username", this.username); //存储用户
-            this.LOGIN({
-              token: res.data.token,
-              username: this.username
-            });
             this.$router.push({ path: "/justclick" });
           } else {
             MessageBox("", res.data.msg);
@@ -65,6 +60,23 @@ export default {
     },
     goRegist() {
       this.$router.push({ path: "/regist" });
+    },
+    rememberUser() {
+      this.rememberflag = !this.rememberflag;
+      if (this.rememberflag == true) {
+        localStorage.setItem("password", this.password);
+      } else {
+        localStorage.setItem("password", "");
+      }
+    }
+  },
+  created() {
+    let name = localStorage.getItem("username");
+    let pswd = localStorage.getItem("password");
+    if (pswd != "") {
+      this.username = name;
+      this.password = pswd;
+      this.rememberflag = true;
     }
   }
 };

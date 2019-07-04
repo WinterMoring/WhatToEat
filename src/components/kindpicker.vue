@@ -50,7 +50,7 @@ export default {
   },
   computed: {
     dataList() {
-      let mydata = ["全部"];
+      let mydata = ["美食"];
       this.kinds.forEach(item => {
         mydata.push(item);
       });

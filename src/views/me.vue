@@ -6,11 +6,18 @@
       </router-link>
     </mt-header>
     <mt-cell title="待完善"></mt-cell>
+    <mt-button type="danger" size="large" @click="logout()">退出登录</mt-button>
   </div>
 </template>
 <script>
 export default {
-  name: "me"
+  name: "me",
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push({ path: "/" });
+    }
+  }
 };
 </script>
 <style lang="scss">

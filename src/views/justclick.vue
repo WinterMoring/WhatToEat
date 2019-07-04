@@ -18,7 +18,7 @@
         {{kind}}
         <img src="../assets/down.png" width="10x" height="10px" />
       </div>
-      <div class="header-cell">只看吃过的</div>
+      <div class="header-cell" :class="{'chosen':choseflag}" @click="showate()">只看吃过的</div>
     </div>
     <div class="wrap">
       <div class="scrollwrap" ref="listscroll">
@@ -38,7 +38,7 @@
       position="bottom"
       style="width: 100%;"
     >
-      <locationpicker @listenlocation="getlocation"></locationpicker>
+      <locationpicker v-if="city!=''" :city="city" @listenlocation="getlocation"></locationpicker>
     </mt-popup>
     <mt-popup
       v-model="popupKind"
@@ -74,6 +74,13 @@ import { setInterval, clearInterval } from "timers";
 import locationpicker from "../components/locationpicker";
 import kindpicker from "../components/kindpicker";
 import { MessageBox } from "mint-ui";
+import axios from "../axios/axios";
+import Urls from "../urls";
+import urls from "../urls";
+import keys from "../keys";
+import { Indicator } from "mint-ui";
+import { Toast } from "mint-ui";
+import { switchCase } from "@babel/types";
 export default {
   name: "justclick",
   components: {
@@ -83,7 +90,11 @@ export default {
   data() {
     return {
       location: "附近",
-      kind: "全部",
+      lat: "",
+      lng: "",
+      choseflag: false,
+      city: "",
+      kind: "美食",
       value: "",
       popupLocation: false,
       popupKind: false,
@@ -91,52 +102,20 @@ export default {
       resultname: "啥啊",
       result: {},
       btnval: "走着",
-      list: [
-        {
-          foodname: "米饭",
-          discription: "雁塔区长延堡路1234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "面条",
-          discription: "秦都区人民西路24534号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "火锅",
-          discription: "火锅",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "黄焖鸡",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "烤肉",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "饺子",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "串串",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        }
-      ],
+      list: [],
       intervalId: null
     };
   },
   methods: {
     showPopLocation() {
       this.popupLocation = true;
+      this.getLocationNearby();
+      this.choseflag = false;
     },
     showPopKind() {
       this.popupKind = true;
+      this.getLocationNearby();
+      this.choseflag = false;
     },
     getresult() {
       if (this.btnval == "走着") {
@@ -165,14 +144,42 @@ export default {
     },
     openConfirm() {
       MessageBox({
-        title: "今天就吃",
-        message: this.resultname,
+        title: this.resultname,
+        message: this.result.discription,
         showCancelButton: true,
         confirmButtonText: "就它了",
         cancelButtonText: "再瞅瞅",
         closeOnClickModal: false
       }).then(action => {
         //添加到吃过的
+        axios
+          .post(urls.addfavours, {
+            username: localStorage.getItem("username"),
+            foodname: this.result.foodname,
+            discription: this.result.discription
+          })
+          .then(res => {
+            //console.log(res);
+            switch (res.data.state) {
+              case 0:
+                let instance = Toast(`已添加到我吃过的`);
+                setTimeout(() => {
+                  instance.close();
+                }, 2000);
+                break;
+              case -1:
+                let instance2 = Toast(`这家吃过，味道不错`);
+                setTimeout(() => {
+                  instance.close();
+                }, 2000);
+                break;
+              default:
+                let instance3 = Toast(`啊哦，出错了`);
+                setTimeout(() => {
+                  instance.close();
+                }, 2000);
+            }
+          });
       });
     },
     openalarm() {
@@ -193,18 +200,135 @@ export default {
       this.$router.push({
         name: "me"
       });
+    },
+    getMyLocation() {
+      Indicator.open({
+        text: "正在获取附近美食...",
+        spinnerType: "fading-circle"
+      });
+      let geolocation = new qq.maps.Geolocation(keys.key, "myapp");
+      geolocation.getIpLocation(this.showPosition, this.showErr);
+    },
+    showPosition(position) {
+      //console.log("position：" + JSON.stringify(position));
+      this.city = position.city;
+      this.lat = position.lat;
+      this.lng = position.lng;
+      this.getNearby(position.lat, position.lng);
+    },
+    showErr(err) {
+      //console.log("定位失败");
+      this.getMyLocation();
+    },
+    getNearby(lat, lng) {
+      let kind = this.kind;
+
+      //console.log("执行getNearby");
+      for (let i = 1; i < 5; i++) {
+        axios
+          .get(Urls.mapsearch, {
+            params: {
+              boundary: `nearby(${lat},${lng},1000)`,
+              page_size: 20,
+              page_index: i,
+              keyword: kind,
+              orderby: "_distance",
+              key: keys.key
+            }
+          })
+          .then(res => {
+            //console.log(JSON.stringify(res.data.data));
+            Indicator.close();
+            let list = [];
+            res.data.data.forEach(item => {
+              list.push({
+                foodname: item.title,
+                discription: item.address
+              });
+            });
+            this.list = list;
+          });
+      }
+    },
+    getLocationNearby() {
+      //console.log("执行getLocationNearby:" + this.location + this.kind);
+      if (this.location == "附近") {
+        this.getNearby(this.lat, this.lng);
+      } else {
+        let kind = this.kind;
+        //console.log
+        for (let i = 1; i < 5; i++) {
+          axios
+            .get(Urls.mapsearch, {
+              params: {
+                boundary: `region(${this.location},0)`,
+                page_size: 20,
+                page_index: i,
+                keyword: kind,
+                orderby: "_distance",
+                key: keys.key
+              }
+            })
+            .then(res => {
+              //console.log(JSON.stringify(res));
+              this.list = [];
+              res.data.data.forEach(item => {
+                this.list.push({
+                  foodname: item.title,
+                  discription: item.address
+                });
+              });
+            });
+        }
+      }
+    },
+    showate() {
+      this.choseflag = !this.choseflag;
+      if (this.choseflag) {
+        axios
+          .get(urls.getfavours, {
+            params: {
+              username: localStorage.getItem("username")
+            }
+          })
+          .then(res => {
+            //console.log(res.data.data);
+            this.list = res.data.data;
+          });
+      } else {
+        this.getLocationNearby();
+      }
     }
   },
+  created() {
+    this.getMyLocation();
+  },
   mounted() {
-    //axios.get();
     this.initScroll();
+  },
+  watch: {
+    location: {
+      handler: function(val) {
+        this.getLocationNearby();
+      }
+    },
+    kind: {
+      handler: function() {
+        this.getLocationNearby();
+      }
+    }
   }
 };
 </script>
 <style lang="scss">
+.chosen {
+  color: #0080ff;
+  border-bottom: 1px solid #0080ff;
+}
 .justclick {
   height: 100%;
   width: 100%;
+  overflow: hidden;
   .h2title {
     display: flex;
     width: 100%;
@@ -244,10 +368,10 @@ export default {
     }
   }
   .wrap {
-    height: 300px;
+    height: 60%;
     overflow: hidden; //没有这个属性就会溢出，跑上去
     .scrollwrap {
-      height: 200px;
+      height: 17rem;
       .foodlist {
         text-align: left;
         width: 100%;

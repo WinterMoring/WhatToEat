@@ -24,92 +24,45 @@
 </template>
 <script>
 import BScroll from "better-scroll";
+import axios from "axios";
+import urls from "../urls";
 export default {
   name: "ate",
   data() {
     return {
-      list: [
-        {
-          foodname: "米饭",
-          discription: "雁塔区长延堡路1234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "面条",
-          discription: "秦都区人民西路24534号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "火锅",
-          discription: "火锅",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "黄焖鸡",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "烤肉",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "饺子",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "串串",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "米饭",
-          discription: "雁塔区长延堡路1234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "面条",
-          discription: "秦都区人民西路24534号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "火锅",
-          discription: "火锅",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "黄焖鸡",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "烤肉",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "饺子",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        },
-        {
-          foodname: "串串",
-          discription: "莲湖区xxxx路346234号",
-          image: "public\\images\\/qdcmifan.jpg"
-        }
-      ]
+      list: []
     };
   },
   methods: {
     deletecell(item, index) {
-      this.list.splice(index, 1);
+      console.log(this.list[index].id);
       //删除操作
+      axios
+        .get(urls.delfavours, {
+          params: {
+            foodid: this.list[index].id
+          }
+        })
+        .then(res => {
+          console.log(res.data);
+        });
+      this.list.splice(index, 1);
     },
     initScroll() {
       new BScroll(this.$refs["listscroll"]);
     }
+  },
+  created() {
+    axios
+      .get(urls.getfavours, {
+        params: {
+          username: localStorage.getItem("username")
+        }
+      })
+      .then(res => {
+        //console.log(res.data.data);
+        this.list = res.data.data;
+      });
   },
   mounted() {
     this.initScroll();
