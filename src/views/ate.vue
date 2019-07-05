@@ -26,6 +26,7 @@
 import BScroll from "better-scroll";
 import axios from "axios";
 import urls from "../urls";
+import { MessageBox } from "mint-ui";
 export default {
   name: "ate",
   data() {
@@ -44,6 +45,11 @@ export default {
           }
         })
         .then(res => {
+          if (res.data.code == 2 || res.data.code == 3) {
+            console.log(res.data);
+            MessageBox("错误", "信息已超时，请重新登录");
+            this.$router.push({ path: "/" });
+          }
           console.log(res.data);
         });
       this.list.splice(index, 1);
@@ -60,6 +66,11 @@ export default {
         }
       })
       .then(res => {
+        if (res.data.code == 2 || res.data.code == 3) {
+          console.log(res.data);
+          MessageBox("错误", "信息已超时，请重新登录");
+          this.$router.push({ path: "/" });
+        }
         //console.log(res.data.data);
         this.list = res.data.data;
       });

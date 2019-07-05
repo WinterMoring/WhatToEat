@@ -55,6 +55,11 @@
 <script>
 import { setTimeout } from "timers";
 import { Toast } from "mint-ui";
+import { MessageBox } from "mint-ui";
+import { returnStatement } from "@babel/types";
+import axios from "axios";
+import urls from "../urls";
+import { deflate } from "zlib";
 export default {
   name: "Regist",
   data() {
@@ -67,13 +72,39 @@ export default {
   methods: {
     regist() {
       //TODO:连后台，做判断
-      //弹出Toast提示
-      let instance = Toast("注册成功");
-      setTimeout(() => {
-        instance.close();
-      }, 1500);
-      //跳转页面
-      this.$router.push({ path: "/justclick" });
+      if (!this.username || !this.password || !this.checkpassword) {
+        MessageBox("提示", "有未输入项");
+        return;
+      } else {
+        if (this.password != this.checkpassword) {
+          MessageBox("提示", "两次输入密码不一致");
+          return;
+        } else {
+          axios
+            .post(urls.regist, {
+              username: this.username,
+              password: this.password
+            })
+            .then(res => {
+              switch (res.data.state) {
+                case 0:
+                  //弹出Toast提示
+                  let instance = Toast("注册成功");
+                  setTimeout(() => {
+                    instance.close();
+                  }, 1500);
+                  //跳转页面
+                  this.$router.push({ path: "/justclick" });
+                  break;
+                case -1:
+                  MessageBox("提示", "用户已存在，请直接登录");
+                  break;
+                default:
+                  MessageBox("提示", "未知错误");
+              }
+            });
+        }
+      }
     }
   }
 };

@@ -287,6 +287,11 @@ export default {
           })
           .then(res => {
             //console.log(res.data.data);
+            if (res.data.code == 2 || res.data.code == 3) {
+              console.log(res.data);
+              MessageBox("错误", "信息已超时，请重新登录");
+              this.$router.push({ path: "/" });
+            }
             this.list = res.data.data;
           });
       } else {
