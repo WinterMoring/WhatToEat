@@ -17,6 +17,7 @@
 import axios from "../axios/axios";
 import urls from "../urls";
 import keys from "../keys";
+import jsonp from "jsonp";
 export default {
   name: "locationpicker",
   props: ["city"],
@@ -54,34 +55,30 @@ export default {
       this.$emit("listenlocation", this.currentTags);
     },
     getLocations(id) {
-      axios
-        .get(urls.locations, {
-          params: {
-            id: id,
-            key: keys.key
-          }
-        })
-        .then(res => {
-          res.data.result[0].forEach(item => {
-            this.locations.push(item.fullname);
-          });
+      this.$jsonp(urls.locations, {
+        id: id,
+        key: keys.key,
+        output: "jsonp"
+      }).then(res => {
+        //console.log(res);
+        res.result[0].forEach(item => {
+          this.locations.push(item.fullname);
         });
+      });
     },
     getLocationId(city) {
-      console.log("执行getlocationid");
-      axios
-        .get(urls.locationid, {
-          params: {
-            keyword: city,
-            key: keys.key
-          }
-        })
-        .then(res => {
-          //console.log(JSON.stringify(res));
-          let id = res.data.result[0][0].id;
-          console.log(JSON.stringify(res.data.result[0][0].id));
-          this.getLocations(id);
-        });
+      //console.log("执行getlocationid");
+      this.$jsonp(urls.locationid, {
+        keyword: city,
+        key: keys.key,
+        output: "jsonp"
+      }).then(res => {
+        //console.log(res);
+        let id = res.result[0][0].id;
+        //console.log(JSON.stringify(res.data.result[0][0].id));
+        //console.log(id);
+        this.getLocations(id);
+      });
     }
   },
   watch: {

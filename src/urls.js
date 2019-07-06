@@ -1,5 +1,9 @@
-const baseUrl = "/api";
-const basemapurl = "/map";
+//const baseUrl = "/api";
+const baseUrl = 'http://47.102.133.83:8080';
+//const basemapurl = "/map";
+//"https://bird.ioliu.cn/v1/?url=" 
+const basemapurl = 'https://apis.map.qq.com';
+const getlocationcity = basemapurl + "/ws/location/v1/ip ";
 const addfavours = baseUrl + "/addfavours";
 const login = baseUrl + "/login";
 const regist = baseUrl + "/regist";
@@ -16,5 +20,6 @@ export default {
     mapsearch,
     locations,
     locationid,
-    delfavours
+    delfavours,
+    getlocationcity
 }

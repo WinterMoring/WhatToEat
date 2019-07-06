@@ -74,11 +74,13 @@ import locationpicker from "../components/locationpicker";
 import kindpicker from "../components/kindpicker";
 import { MessageBox } from "mint-ui";
 import axios from "../axios/axios";
-import Urls from "../urls";
 import urls from "../urls";
 import keys from "../keys";
 import { Indicator } from "mint-ui";
 import { Toast } from "mint-ui";
+//import jsonp from "jsonp";
+import { constants } from "crypto";
+
 export default {
   name: "justclick",
   components: {
@@ -200,18 +202,42 @@ export default {
         text: "正在获取附近美食...",
         spinnerType: "fading-circle"
       });
-      let geolocation = new qq.maps.Geolocation(keys.key, "myapp");
-      geolocation.getIpLocation(this.showPosition, this.showErr);
+      //let geolocation = new qq.maps.Geolocation(keys.key, "myapp");
+      //geolocation.getIpLocation(this.showPosition, this.showErr);
+      this.$jsonp("https://apis.map.qq.com/ws/location/v1/ip", {
+        key: keys.key,
+        output: "jsonp"
+      })
+        .then(res => {
+          //console.log(res.result);
+          let position = {
+            city: res.result.ad_info.city,
+            lat: res.result.location.lat,
+            lng: res.result.location.lng
+          };
+          this.showPosition(position);
+        })
+        .catch(err => {
+          this.showErr();
+        });
     },
+
     showPosition(position) {
-      //console.log("position：" + JSON.stringify(position));
+      // console.log(
+      //   "lat：" +
+      //     position.lat +
+      //     "  lng:" +
+      //     position.lng +
+      //     "  city:" +
+      //     position.city
+      // );
       this.city = position.city;
       this.lat = position.lat;
       this.lng = position.lng;
       this.getNearby(position.lat, position.lng);
     },
-    showErr(err) {
-      //console.log("定位失败");
+    showErr() {
+      console.log("定位失败");
       this.getMyLocation();
     },
     getNearby(lat, lng) {
@@ -219,29 +245,26 @@ export default {
 
       //console.log("执行getNearby");
       for (let i = 1; i < 5; i++) {
-        axios
-          .get(Urls.mapsearch, {
-            params: {
-              boundary: `nearby(${lat},${lng},1000)`,
-              page_size: 20,
-              page_index: i,
-              keyword: kind,
-              orderby: "_distance",
-              key: keys.key
-            }
-          })
-          .then(res => {
-            //console.log(JSON.stringify(res.data.data));
-            Indicator.close();
-            let list = [];
-            res.data.data.forEach(item => {
-              list.push({
-                foodname: item.title,
-                discription: item.address
-              });
+        this.$jsonp(urls.mapsearch, {
+          boundary: `nearby(${lat},${lng},1000)`,
+          page_size: 20,
+          page_index: i,
+          keyword: kind,
+          output: "jsonp",
+          orderby: "_distance",
+          key: keys.key
+        }).then(res => {
+          //console.log(res.data);
+          Indicator.close();
+          let list = [];
+          res.data.forEach(item => {
+            list.push({
+              foodname: item.title,
+              discription: item.address
             });
-            this.list = list;
           });
+          this.list = list;
+        });
       }
     },
     getLocationNearby() {
@@ -250,29 +273,26 @@ export default {
         this.getNearby(this.lat, this.lng);
       } else {
         let kind = this.kind;
-        //console.log
+
         for (let i = 1; i < 5; i++) {
-          axios
-            .get(Urls.mapsearch, {
-              params: {
-                boundary: `region(${this.location},0)`,
-                page_size: 20,
-                page_index: i,
-                keyword: kind,
-                orderby: "_distance",
-                key: keys.key
-              }
-            })
-            .then(res => {
-              //console.log(JSON.stringify(res));
-              this.list = [];
-              res.data.data.forEach(item => {
-                this.list.push({
-                  foodname: item.title,
-                  discription: item.address
-                });
+          this.$jsonp(urls.mapsearch, {
+            boundary: `region(${this.location},0)`,
+            page_size: 20,
+            page_index: i,
+            keyword: kind,
+            orderby: "_distance",
+            output: "jsonp",
+            key: keys.key
+          }).then(res => {
+            //console.log(JSON.stringify(res));
+            this.list = [];
+            res.data.forEach(item => {
+              this.list.push({
+                foodname: item.title,
+                discription: item.address
               });
             });
+          });
         }
       }
     },

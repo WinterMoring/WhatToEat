@@ -8,9 +8,11 @@ import './registerServiceWorker'
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import Vuex from "vuex"
+import VueJsonp from 'vue-jsonp';
 
 Vue.config.productionTip = false
 Vue.use(Mint);
+Vue.use(VueJsonp)
 
 new Vue({
     router,
@@ -18,5 +20,6 @@ new Vue({
     axios,
     VueAxios,
     Vuex,
+
     render: h => h(App)
 }).$mount('#app');

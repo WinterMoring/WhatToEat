@@ -15,7 +15,7 @@
           :right="[{
         content:'删除',
         style: { background: 'red', color: '#fff' },
-        handler: ()=>deletecell(item,index)
+        handler: function(){deletecell(item,index)}
         }]"
         ></mt-cell-swipe>
       </div>
@@ -36,7 +36,8 @@ export default {
   },
   methods: {
     deletecell(item, index) {
-      console.log(this.list[index].id);
+      //console.log(this.list[index].id);
+      console.log("点了删除");
       //删除操作
       axios
         .get(urls.delfavours, {
