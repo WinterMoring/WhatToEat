@@ -150,32 +150,36 @@ export default {
         confirmButtonText: "就它了",
         cancelButtonText: "再瞅瞅",
         closeOnClickModal: false
-      }).then(() => {
-        //添加到吃过的
-        axios
-          .post(urls.addfavours, {
-            username: localStorage.getItem("username"),
-            foodname: this.result.foodname,
-            discription: this.result.discription
-          })
-          .then(res => {
-            //console.log(res);
-            let msg = "";
-            switch (res.data.state) {
-              case 0:
-                msg = "已添加到我吃过的";
-                break;
-              case -1:
-                msg = `这家吃过，味道不错`;
-                break;
-              default:
-                msg = "啊哦，出错了";
-            }
-            let instance = Toast(msg);
-            setTimeout(() => {
-              instance.close();
-            }, 2000);
-          });
+      }).then(action => {
+        if (action == "confirm") {
+          //添加到吃过的
+          axios
+            .post(urls.addfavours, {
+              username: localStorage.getItem("username"),
+              foodname: this.result.foodname,
+              discription: this.result.discription
+            })
+            .then(res => {
+              //console.log(res);
+              let msg = "";
+              switch (res.data.state) {
+                case 0:
+                  msg = "已添加到我吃过的";
+                  break;
+                case -1:
+                  msg = `这家吃过，味道不错`;
+                  break;
+                default:
+                  msg = "啊哦，出错了";
+              }
+              let instance = Toast(msg);
+              setTimeout(() => {
+                instance.close();
+              }, 2000);
+            });
+        } else {
+          return;
+        }
       });
     },
     openalarm() {

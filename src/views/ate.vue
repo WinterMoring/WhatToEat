@@ -47,11 +47,11 @@ export default {
         })
         .then(res => {
           if (res.data.code == 2 || res.data.code == 3) {
-            console.log(res.data);
+            //console.log(res.data);
             MessageBox("错误", "信息已超时，请重新登录");
             this.$router.push({ path: "/" });
           }
-          console.log(res.data);
+          //console.log(res.data);
         });
       this.list.splice(index, 1);
     },
@@ -68,7 +68,7 @@ export default {
       })
       .then(res => {
         if (res.data.code == 2 || res.data.code == 3) {
-          console.log(res.data);
+         // console.log(res.data);
           MessageBox("错误", "信息已超时，请重新登录");
           this.$router.push({ path: "/" });
         }
