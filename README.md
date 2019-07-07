@@ -14,7 +14,7 @@ jsonp:解决腾讯地图API跨域
 mint-ui:ui组件
 ### 源码地址
 演示地址：
-![Image text](https://raw.githubusercontent.com/WinterMoring/WhatToEat/master/%E6%BC%94%E7%A4%BA%E5%9C%B0%E5%9D%80/1562422130.png）
+![Image text](https://raw.githubusercontent.com/WinterMoring/WhatToEat/master/1562422130.png)
 
 源码地址：https://github.com/WinterMoring/WhatToEat
 
